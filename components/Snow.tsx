@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 
 const Snow: React.FC = () => {
@@ -10,70 +9,42 @@ const Snow: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let snowflakes: any[] = [];
-    let animationFrameId: number;
+    let particles: { x: number; y: number; r: number; d: number; s: number }[] = [];
+    const count = 100;
 
-    const resize = () => {
+    const init = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      particles = [];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 3 + 1,
+          d: Math.random() * count,
+          s: Math.random() * 0.5 + 0.2
+        });
+      }
     };
 
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Snowflake {
-      x: number;
-      y: number;
-      radius: number;
-      speed: number;
-      wind: number;
-      opacity: number;
-
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * 3 + 1;
-        this.speed = Math.random() * 1 + 0.5;
-        this.wind = Math.random() * 0.5 - 0.25;
-        this.opacity = Math.random() * 0.5 + 0.3;
-      }
-
-      update() {
-        this.y += this.speed;
-        this.x += this.wind;
-        if (this.y > canvas.height) {
-          this.y = -10;
-          this.x = Math.random() * canvas.width;
-        }
-      }
-
-      draw(ctx: CanvasRenderingContext2D) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < 150; i++) {
-      snowflakes.push(new Snowflake());
-    }
-
-    const animate = () => {
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      snowflakes.forEach(s => {
-        s.update();
-        s.draw(ctx);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.beginPath();
+      particles.forEach(p => {
+        ctx.moveTo(p.x, p.y);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+        p.y += p.s;
+        if (p.y > canvas.height) p.y = -10;
       });
-      animationFrameId = requestAnimationFrame(animate);
+      ctx.fill();
+      requestAnimationFrame(draw);
     };
 
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animationFrameId);
-    };
+    init();
+    draw();
+    window.addEventListener('resize', init);
+    return () => window.removeEventListener('resize', init);
   }, []);
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
