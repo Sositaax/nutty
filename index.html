@@ -1,77 +1,397 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For My Dearest Nutty</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
     <style>
-      body {
-        margin: 0;
-        background: #020617;
-        overflow: hidden;
-        cursor: crosshair;
-        color: white;
-        height: 100vh;
-        width: 100vw;
-      }
-      * {
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .gold-shimmer {
-        background: linear-gradient(90deg, #ffd700, #fff5d1, #ffd700, #fff5d1, #ffd700);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shimmer 4s linear infinite;
-      }
-      @keyframes shimmer {
-        to { background-position: 200% center; }
-      }
-      #root:empty::before {
-        content: "PREPARING THE MAGIC...";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #fbbf24;
-        font-family: 'Montserrat', sans-serif;
-        letter-spacing: 0.8em;
-        font-size: 10px;
-        animation: pulse 1.5s infinite;
-      }
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-      }
-      .perspective-1500 {
-        perspective: 1500px;
-      }
-      .scrollbar-hide::-webkit-scrollbar { display: none; }
-      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        :root {
+            --bg-deep: #020617;
+            --ruby: #991b1b;
+            --ruby-dark: #7f1d1d;
+            --gold: #fbbf24;
+        }
+        body {
+            margin: 0;
+            background: var(--bg-deep);
+            overflow: hidden;
+            cursor: crosshair;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+        }
+        * { user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        .gold-shimmer {
+            background: linear-gradient(90deg, #ffd700, #fff5d1, #ffd700, #fff5d1, #ffd700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+        @keyframes shimmer { to { background-position: 200% center; } }
+
+        /* 3D Envelope Scene */
+        .scene {
+            width: 300px;
+            height: 200px;
+            perspective: 1500px;
+            position: relative;
+            z-index: 50;
+        }
+        @media (min-width: 768px) { .scene { width: 500px; height: 350px; } }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: var(--ruby-dark);
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.8);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ruby);
+            clip-path: polygon(0% 0%, 50% 55%, 100% 0%);
+            transform-origin: top;
+            transition: transform 0.8s ease-in-out;
+            z-index: 60;
+        }
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 10;
+        }
+
+        .envelope-front {
+            position: absolute;
+            inset: 0;
+            background: var(--ruby-dark);
+            clip-path: polygon(0% 0%, 50% 60%, 100% 0%, 100% 100%, 0% 100%);
+            z-index: 50;
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #fbbf24, #b45309);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Great Vibes', cursive;
+            font-size: 32px;
+            color: #450a0a;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            z-index: 70;
+            transition: opacity 0.4s, transform 0.4s;
+            border: 2px solid #92400e;
+        }
+        .envelope.open .wax-seal { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+
+        /* Emerging Content */
+        .card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 20;
+            cursor: pointer;
+        }
+        .envelope.open .card-letter {
+            transform: translate(-95%, -85%) rotate(-8deg) scale(1);
+            opacity: 1;
+        }
+        .envelope.open .card-photo {
+            transform: translate(-5%, -75%) rotate(10deg) scale(1);
+            opacity: 1;
+        }
+
+        /* Focus Mode Styles */
+        .card.focused {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1) !important;
+            z-index: 200 !important;
+            width: 90vw !important;
+            max-width: 500px !important;
+        }
+        #focus-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(15px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            z-index: 150;
+        }
+        #focus-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* Component Visuals */
+        .letter-paper {
+            background: #fffdf0;
+            width: 280px;
+            height: 380px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: #1e293b;
+        }
+        @media (min-width: 768px) { .letter-paper { width: 420px; height: 550px; padding: 50px; } }
+        
+        .photo-frame {
+            background: white;
+            padding: 10px 10px 50px 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 220px;
+        }
+        @media (min-width: 768px) { .photo-frame { width: 350px; padding: 15px 15px 70px 15px; } }
+
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            animation: sparkle-anim 1s ease-out forwards;
+        }
+        @keyframes sparkle-anim {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+        }
     </style>
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom": "https://esm.sh/react-dom@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
-  }
-}
-</script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="https://esm.sh/run"></script>
-    <script type="text/tsx">
-      import './index.tsx';
+</head>
+<body>
+    <!-- Background Layers -->
+    <div class="fixed inset-0 z-0">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_#0f172a_0%,_#020617_80%)]"></div>
+        <div id="glow-layer" class="absolute inset-0 bg-rose-950/20 opacity-0 transition-opacity duration-1000"></div>
+    </div>
+
+    <canvas id="snowCanvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+    <canvas id="fireworkCanvas" class="fixed inset-0 pointer-events-none z-20"></canvas>
+
+    <div id="focus-overlay"></div>
+
+    <main class="relative z-30 h-full w-full flex flex-col items-center justify-center p-4">
+        <!-- Header -->
+        <header id="main-header" class="text-center mb-16 transition-all duration-1000">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <span class="text-3xl animate-bounce">🎇</span>
+                <p class="text-amber-400 font-black tracking-[0.5em] uppercase text-xs">New Year 2026</p>
+                <span class="text-3xl animate-bounce" style="animation-delay: 0.2s">🎇</span>
+            </div>
+            <h1 class="text-7xl md:text-[11rem] font-['Great_Vibes'] gold-shimmer leading-none mb-4">Nutty</h1>
+            <p class="text-white/20 font-bold tracking-[0.8em] uppercase text-[10px] md:text-xs">My Forever Masterpiece</p>
+        </header>
+
+        <!-- The 3D Envelope -->
+        <div class="scene">
+            <div id="envelope" class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-front"></div>
+                <div class="wax-seal">N</div>
+
+                <!-- Letter Component -->
+                <div id="letter" class="card card-letter">
+                    <div class="letter-paper flex flex-col">
+                        <div class="text-amber-900/20 italic text-2xl text-center mb-4">2026</div>
+                        <h2 class="font-['Great_Vibes'] text-rose-900 text-3xl md:text-5xl mb-6 text-center border-b border-rose-100 pb-4">Dearest Nutty,</h2>
+                        <div class="font-['Dancing_Script'] text-slate-800 text-xl md:text-2xl leading-relaxed flex-grow overflow-y-auto scrollbar-hide pr-2">
+                            As the clock ticks towards 2026, I found myself thinking about every single smile you've given me. You aren't just a part of my life—you are the rhythm of my heart and the light that guides me home.<br><br>
+                            This past year was beautiful, but with you by my side, I know 2026 will be our best chapter yet. I want to be the reason you wake up happy every single day. I want to be the one who supports your dreams and loves you more with every passing second.<br><br>
+                            Thank you for being my peace, my favorite chaos, and my favorite person in the entire world. You are my forever, Nutty.<br><br>
+                            Happy New Year, my love. Forever yours.
+                        </div>
+                        <div class="mt-8 text-center font-['Dancing_Script'] text-2xl text-rose-800 font-bold">Forever and Always.</div>
+                    </div>
+                </div>
+
+                <!-- Photo Component -->
+                <div id="photo" class="card card-photo">
+                    <div class="photo-frame flex flex-col items-center">
+                        <div class="w-full h-full bg-slate-100 overflow-hidden border border-slate-200">
+                            <img src="https://media.discordapp.net/attachments/773103472127508504/1452838010826653706/IMG_20251223_023551_306.jpg?ex=694b4456&is=6949f2d6&hm=25909b2111bf74a30bf33f2a014dbd59e5019b1eb81b4fc8096ad5f3b6a9aeb6&=&format=webp&width=688&height=1224" 
+                                 alt="Nutty" class="w-full h-full object-cover">
+                        </div>
+                        <div class="mt-4 font-['Great_Vibes'] text-2xl md:text-4xl text-slate-800">My Beautiful Nutty</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tap Prompt -->
+        <div id="prompt" class="mt-24 flex flex-col items-center gap-4 transition-opacity duration-500 cursor-pointer">
+            <div class="bg-white/5 backdrop-blur-xl px-10 py-3 rounded-full border border-white/10 hover:border-amber-500/50 transition-all">
+                <span class="text-amber-200/60 font-black tracking-[0.5em] text-[10px] uppercase">Open Your Heart</span>
+            </div>
+            <div class="text-5xl animate-bounce">💌</div>
+        </div>
+    </main>
+
+    <footer class="absolute bottom-8 w-full text-center text-white/5 font-black tracking-[2em] text-[8px] uppercase pointer-events-none">
+        Nutty & You • Infinity
+    </footer>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const prompt = document.getElementById('prompt');
+        const header = document.getElementById('main-header');
+        const overlay = document.getElementById('focus-overlay');
+        const glow = document.getElementById('glow-layer');
+        const letter = document.getElementById('letter');
+        const photo = document.getElementById('photo');
+
+        let isOpen = false;
+        let isFireworksActive = false;
+
+        // --- Interaction Logic ---
+        envelope.onclick = () => {
+            if (isOpen) return;
+            isOpen = true;
+            envelope.classList.add('open');
+            prompt.style.opacity = '0';
+            prompt.style.pointerEvents = 'none';
+            header.style.transform = 'translateY(-40vh) scale(0.5)';
+            header.style.opacity = '0';
+            glow.style.opacity = '1';
+            setTimeout(() => { isFireworksActive = true; }, 1000);
+        };
+
+        function toggleFocus(el) {
+            if (!isOpen) return;
+            const alreadyFocused = el.classList.contains('focused');
+            
+            // Clear all focus
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('focused'));
+            overlay.classList.remove('active');
+
+            if (!alreadyFocused) {
+                el.classList.add('focused');
+                overlay.classList.add('active');
+            }
+        }
+
+        letter.onclick = (e) => { e.stopPropagation(); toggleFocus(letter); };
+        photo.onclick = (e) => { e.stopPropagation(); toggleFocus(photo); };
+        overlay.onclick = () => toggleFocus({ classList: { contains: () => true } }); // Quick hack to close
+
+        // --- Sparkle Trail ---
+        window.onmousemove = (e) => {
+            if (Math.random() > 0.9) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.innerHTML = ['✨', '💖', '⭐', '❄️'][Math.floor(Math.random() * 4)];
+                s.style.left = e.clientX + 'px';
+                s.style.top = e.clientY + 'px';
+                s.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 1000);
+            }
+        };
+
+        // --- Snow Engine ---
+        const snowCanvas = document.getElementById('snowCanvas');
+        const sCtx = snowCanvas.getContext('2d');
+        let snowflakes = [];
+
+        function initSnow() {
+            snowCanvas.width = window.innerWidth;
+            snowCanvas.height = window.innerHeight;
+            snowflakes = Array.from({ length: 120 }, () => ({
+                x: Math.random() * snowCanvas.width,
+                y: Math.random() * snowCanvas.height,
+                r: Math.random() * 3 + 1,
+                s: Math.random() * 1 + 0.5,
+                o: Math.random() * 0.5 + 0.2
+            }));
+        }
+
+        function drawSnow() {
+            sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+            sCtx.fillStyle = 'white';
+            snowflakes.forEach(p => {
+                sCtx.globalAlpha = p.o;
+                sCtx.beginPath();
+                sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                sCtx.fill();
+                p.y += p.s;
+                if (p.y > snowCanvas.height) p.y = -10;
+            });
+            requestAnimationFrame(drawSnow);
+        }
+
+        // --- Firework Engine ---
+        const fwCanvas = document.getElementById('fireworkCanvas');
+        const fCtx = fwCanvas.getContext('2d');
+        let particles = [];
+
+        function initFW() {
+            fwCanvas.width = window.innerWidth;
+            fwCanvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.life = 1; this.decay = Math.random() * 0.02 + 0.01;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.vy += 0.05; // Gravity
+                this.life -= this.decay;
+            }
+        }
+
+        function createBurst(x, y) {
+            const colors = ['#fbbf24', '#f472b6', '#60a5fa', '#34d399', '#fef3c7'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 40; i++) particles.push(new Particle(x, y, color));
+        }
+
+        function drawFW() {
+            fCtx.fillStyle = 'rgba(2, 6, 23, 0.2)';
+            fCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
+            
+            if (isFireworksActive && Math.random() < 0.05) {
+                createBurst(Math.random() * fwCanvas.width, Math.random() * fwCanvas.height * 0.5);
+            }
+
+            particles = particles.filter(p => p.life > 0);
+            particles.forEach(p => {
+                p.update();
+                fCtx.globalAlpha = p.life;
+                fCtx.fillStyle = p.color;
+                fCtx.beginPath();
+                fCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                fCtx.fill();
+            });
+            requestAnimationFrame(drawFW);
+        }
+
+        window.onresize = () => { initSnow(); initFW(); };
+        initSnow(); drawSnow();
+        initFW(); drawFW();
     </script>
-  </body>
+</body>
 </html>
