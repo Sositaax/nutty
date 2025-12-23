@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For My Dearest Nutty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <style>
+      body {
+        margin: 0;
+        background: #020617;
+        overflow-x: hidden;
+        cursor: none;
+      }
+      * {
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .gold-shimmer {
+        background: linear-gradient(90deg, #ffd700, #ffffff, #ffd700, #ffffff, #ffd700);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 5s linear infinite;
+      }
+      @keyframes shimmer {
+        to { background-position: 200% center; }
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-15px) rotate(3deg); }
+      }
+      .floating {
+        animation: float 5s ease-in-out infinite;
+      }
+      #root {
+        min-height: 100vh;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- This runner will automatically transpile and execute your .tsx files -->
+    <script type="module" src="https://esm.sh/run"></script>
+    
+    <script type="text/tsx">
+      import './index.tsx';
+    </script>
+  </body>
+</html>

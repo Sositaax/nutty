@@ -1,0 +1,19 @@
+
+{
+  "name": "nutty-2026-love-letter",
+  "version": "1.0.0",
+  "description": "An interactive digital love letter for the new year.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "love",
+    "christmas",
+    "newyear",
+    "react",
+    "animation"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
